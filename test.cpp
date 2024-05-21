@@ -2,6 +2,7 @@
 #include "StaticFIRFilter.hpp"
 #include <vector>
 #include <iostream>
+#include <cmath>
 
 TEST_GROUP(TestSFF)
 {
@@ -34,19 +35,35 @@ TEST(TestSFF, TestInitZeros)
     filt.init_zeros();
     auto v = filt.apply_filter(1.0f);
     CHECK_TRUE(v.has_value());
-    printf("%f\n", v.value());
 
     v = filt.apply_filter(0.0f);
     CHECK_TRUE(v.has_value());
-    printf("%f\n", v.value());
 
     v = filt.apply_filter(0.0f);
     CHECK_TRUE(v.has_value());
-    printf("%f\n", v.value());
 
     v = filt.apply_filter(0.0f);
     CHECK_TRUE(v.has_value());
-    printf("%f\n", v.value());
+}
 
+bool is_equal(float a, float b, float epsilon) {
+    return (fabsf(a-b)/b < epsilon);
+}
+
+TEST(TestSFF, TestDataCSV)
+{
+#include "testdata.h"
+
+    std::vector<float> outdata;
+    for (auto& v: test_samples) {
+        auto ret = testFilter.apply_filter(v);
+        if (ret)
+            outdata.push_back(ret.value());
+    }
+
+    for (int i = 0; i < sizeof(test_output)/sizeof(test_output[0]); i++) {
+        //0.01% accuracy to account for float in C++ vs double in python
+        CHECK_TRUE(is_equal(test_output[i], outdata.at(i), 0.0001f));
+    }
 
 }
