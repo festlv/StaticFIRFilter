@@ -1,0 +1,3 @@
+[submodule "StaticCircularBuffer"]
+	path = StaticCircularBuffer
+	url = git@github.com:festlv/StaticCircularBuffer.git
